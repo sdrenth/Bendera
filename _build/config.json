@@ -1,0 +1,49 @@
+{
+    "name": "Bendera",
+    "lowCaseName": "bendera",
+    "description": "",
+    "author": "Sterc",
+    "version": "0.1.0",
+    "package":{
+        "menus": [{
+            "text": "bendera",
+            "description": "bendera.menu_desc",
+            "action": "index"
+        }],
+        "elements": {
+            "categories": [{
+                "name": "Bendera"
+            }],
+            "snippets": [{
+                "name": "bendera",
+                "file": "bendera.snippet.php"
+            }],
+            "chunks": [{
+                "name": "benderaItem",
+                "file": "benderaitem.chunk.tpl"
+            }]
+        },
+        "systemSettings": [{
+            "key": "user_name",
+            "type": "textfield",
+            "area": "default",
+            "value": ""
+        }, {
+            "key": "user_email",
+            "type": "textfield",
+            "area": "default",
+            "value": ""
+        }]
+    }
+    ,"database": {
+        "tables": ["BenderaItem"]
+    }
+    ,"build":{
+        "resolver": {
+            "after": ["setupoptions.resolver.php", "stercextra.resolver.php"]
+        },
+        "setupOptions":{
+            "source": "setup.options.php"
+        }
+    }
+}

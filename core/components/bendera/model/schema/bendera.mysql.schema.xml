@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model package="bendera" baseClass="xPDOObject" platform="mysql" defaultEngine="MyISAM" phpdoc-package="bendera">
+    <object class="BenderaItem" table="bendera_items" extends="xPDOSimpleObject">
+        <field key="title" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="description" dbtype="text" phptype="text" null="false" default="" />  
+
+        <field key="content" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="size" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+
+        <field key="startdate" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="enddate" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+
+        <field key="type" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="resource" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="categories" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="createdon" dbtype="timestamp" phptype="timestamp"/>
+        <field key="context" dbtype="varchar" precision="10" phptype="string" null="false" default="" />
+        <field key="url" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+    
+    </object>    
+</model>
