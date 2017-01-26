@@ -2,7 +2,7 @@
 Bendera
 --------------------
 Version: 1.0.0
-Author: John Doe <john@doe.com>
+Author: Sterc <modx@sterc.nl>
 --------------------
 
 A basic Extra for MODx Revolution.

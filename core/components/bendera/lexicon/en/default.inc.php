@@ -49,4 +49,8 @@ $_lang['bendera.resource'] = 'Advertentie plaatsen in de categorieën';
 $_lang['bendera.startdate'] = 'Startdatum';
 $_lang['bendera.enddate'] = 'Einddatum';
 
-
+/* System setting */
+$_lang['setting_bendera.user_name'] = 'Your name';
+$_lang['setting_bendera.user_name_desc'] = 'Is used for the Sterc Extra\'s newsletter subscription. (optional)';
+$_lang['setting_bendera.user_email'] = 'Your emailaddress';
+$_lang['setting_bendera.user_email_desc'] = 'Is used for the Sterc Extra\'s newsletter subscription. (optional)';
