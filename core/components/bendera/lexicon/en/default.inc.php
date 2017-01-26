@@ -26,28 +26,28 @@
  * @subpackage lexicon
  */
 $_lang['bendera'] = 'Bendera';
-$_lang['bendera.menu_desc'] = 'Beheer hier al uw advertenties.';
-$_lang['bendera.items'] = 'Advertenties';
-$_lang['bendera.item_create'] = 'Nieuwe advertentie';
-$_lang['bendera.item_err_ae'] = 'Er bestaat al een advertentie met die titel.';
-$_lang['bendera.item_err_nf'] = 'Advertentie niet gevonden.';
-$_lang['bendera.item_err_ns'] = 'Advertentie niet geselecteerd.';
-$_lang['bendera.item_err_remove'] = 'Er is een fout opgetreden bij het verwijderen van deze advertentie.';
-$_lang['bendera.item_err_save'] = 'Er is een fout opgetreden bij het opslaan van deze advertentie.';
-$_lang['bendera.item_remove'] = 'Advertentie verwijderen';
-$_lang['bendera.item_remove_confirm'] = 'Weet u zeker dat u deze advertentie wilt verwijderen?';
-$_lang['bendera.item_update'] = 'Advertentie aanpassen';
-$_lang['bendera.intro_msg'] = 'Beheer uw advertenties.';
+$_lang['bendera.menu_desc'] = 'Manage all your advertisements.';
+$_lang['bendera.items'] = 'Advertisements';
+$_lang['bendera.item_create'] = 'New  Advertisement';
+$_lang['bendera.item_err_ae'] = 'An advertisement already exists with this title.';
+$_lang['bendera.item_err_nf'] = 'Advertisement not found.';
+$_lang['bendera.item_err_ns'] = 'Advertisement not selected.';
+$_lang['bendera.item_err_remove'] = 'Something went wrong while deleting this advertisement.';
+$_lang['bendera.item_err_save'] = 'Something went wrong while saving this advertisement.';
+$_lang['bendera.item_remove'] = 'Delete advertisement';
+$_lang['bendera.item_remove_confirm'] = 'Are you sure you want to delete this advertisement?';
+$_lang['bendera.item_update'] = 'Update advertisement';
+$_lang['bendera.intro_msg'] = 'Manage your advertisements.';
 
-$_lang['bendera.kindad'] = 'Soort advertentie';
-$_lang['bendera.title'] = 'Titel';
-$_lang['bendera.description'] = 'Beschrijving';
-$_lang['bendera.image'] = 'Afbeelding';
-$_lang['bendera.flash'] = 'Flash bestand';
+$_lang['bendera.kindad'] = 'Type advertisement';
+$_lang['bendera.title'] = 'Title';
+$_lang['bendera.description'] = 'Description';
+$_lang['bendera.image'] = 'Image';
+$_lang['bendera.flash'] = 'Flash file';
 $_lang['bendera.html'] = 'HTML content';
-$_lang['bendera.resource'] = 'Advertentie plaatsen in de categorieën';
-$_lang['bendera.startdate'] = 'Startdatum';
-$_lang['bendera.enddate'] = 'Einddatum';
+$_lang['bendera.resource'] = 'Place advertisement in categories:';
+$_lang['bendera.startdate'] = 'Start date';
+$_lang['bendera.enddate'] = 'End date';
 
 /* System setting */
 $_lang['setting_bendera.user_name'] = 'Your name';
