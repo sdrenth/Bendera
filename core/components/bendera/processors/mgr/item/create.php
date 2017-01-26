@@ -32,18 +32,16 @@ switch ($_POST['type']) {
     case 'affiliate':
     case 'Affiliate':
         $_POST['content'] = $_POST['html'];
-    break;
-        
+        break;
     case 'Flash':
     case 'flash':
         $_POST['content'] = $_POST['flash_swf'];
-    break;
-        
+        break;
     case 'image':
     case 'Image':
     case 'Afbeelding':
         $_POST['content'] = $_POST['image'];
-    break;
+        break;
 }
 
 $_POST['categories'] = implode(',', $_POST['categories']);

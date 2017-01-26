@@ -21,21 +21,27 @@
  */
 /**
  * Remove an Item.
- * 
+ *
  * @package bendera
  * @subpackage processors
  */
 /* get board */
-if (empty($scriptProperties['id'])) return $modx->error->failure($modx->lexicon('bendera.item_err_ns'));
-$item = $modx->getObject('BenderaItem',$scriptProperties['id']);
-if (!$item) return $modx->error->failure($modx->lexicon('bendera.item_err_nf'));
+if (empty($scriptProperties['id'])) {
+    return $modx->error->failure($modx->lexicon('bendera.item_err_ns'));
+}
+
+$item = $modx->getObject('BenderaItem', $scriptProperties['id']);
+if (!$item) {
+    return $modx->error->failure($modx->lexicon('bendera.item_err_nf'));
+}
 
 if ($item->remove() == false) {
     return $modx->error->failure($modx->lexicon('bendera.item_err_remove'));
 }
-	
+
 $modx->cacheManager->refresh(array(
     'db' => array('objects' => array('BenderaItem'))
 ));
+
 /* output */
-return $modx->error->success('',$item);
+return $modx->error->success('', $item);
