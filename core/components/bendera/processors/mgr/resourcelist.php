@@ -32,12 +32,6 @@ $c->sortby('menuindex', 'ASC');
 $resources = $this->modx->getCollection('modResource', $c);
 
 foreach ($resources as $resource) {
-/*
-        $values[] = array(
-            'value' => $resource->get('id'),
-            'text' => $resource->get('pagetitle').' ('.$resource->get('id').')'
-        );
-*/
     $values[] = array(
         'id' => $resource->get('id'),
         'pagetitle' => $resource->get('pagetitle').' ('.$resource->get('id').')'

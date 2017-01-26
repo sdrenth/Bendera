@@ -25,18 +25,19 @@
  * @package bendera
  * @subpackage processors
  */
-// trigger_error(json_encode($_REQUEST),E_USER_ERROR);
 $isLimit = !empty($_REQUEST['limit']);
-$start = $modx->getOption('start',$_REQUEST,0);
-$limit = $modx->getOption('limit',$_REQUEST,20);
+$start = $modx->getOption('start', $_REQUEST, 0);
+$limit = $modx->getOption('limit', $_REQUEST, 20);
 
 $c = $modx->newQuery('BenderaItem');
 $c->where(array('context' => $_REQUEST['context']));
 $count = $modx->getCount('BenderaItem', $c);
 
-if ($isLimit) $c->limit($limit, $start);
-$items = $modx->getCollection('BenderaItem', $c);
+if ($isLimit) {
+    $c->limit($limit, $start);
+}
 
+$items = $modx->getCollection('BenderaItem', $c);
 $list = array();
 foreach ($items as $item) {
     $itemArray = $item->toArray();
@@ -46,26 +47,21 @@ foreach ($items as $item) {
         case 'Affiliate':
         case 'affiliate':
             $itemArray['html'] = $itemArray['content'];
-        break;
-
+            break;
         case 'Flash':
         case 'flash':
             $itemArray['flash_swf'] = $itemArray['content'];
-        break;
-
+            break;
         case 'image':
         case 'Image':
         case 'Afbeelding':
             $itemArray['image'] = $itemArray['content'];
             $itemArray['image_newimage'] = $itemArray['content'];
-
-        break;
+            break;
     }
 
- //    $dateformat = 'Y-m-d g:i:s';
-	// $itemArray['startdate'] = date($dateformat, $itemArray['startdate']);
-	// $itemArray['enddate'] = date($dateformat, $itemArray['enddate']);
     $itemArray['resource'] = str_replace('||', ',', $itemArray['resource']);
     $list[]= $itemArray;
 }
+
 return $this->outputArray($list, $count);

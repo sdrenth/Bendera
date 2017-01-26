@@ -1,17 +1,16 @@
 <?php
-//ajaxify our response data
+/* Ajaxify our response data */
 function setResponse($data)
 {
     $res = array(
-
-        "success"=>true,
-        "rows"=>$data
+        "success" =>true,
+        "rows" =>$data
     );
 
     $d = json_encode($res);
     header("Content-type: text/html; charset=UTF-8");
-
     header("Content-Size: " . strlen($d));
+
     echo $d;
 }
 
@@ -19,7 +18,6 @@ $c = $this->modx->newQuery('modTemplate');
 if (isset($_REQUEST['query']) && !empty($_REQUEST['query'])) {
     $c->where(
         array(
-            //'pagetitle:LIKE' => '%'.$_REQUEST['query'].'%',
             'templatename:LIKE' => $_REQUEST['query'].'%',
         )
     );
