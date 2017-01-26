@@ -26,64 +26,40 @@
  * @subpackage controllers
  */
 
-$depth = 2;
-
-$c = $modx->newQuery('modResource');
-$c->where(array(
-    'deleted' => false,
-    'published' => true,
-    'parent' => 0,
-    'context_key' => 'web'
-));
-$rootResources = $modx->getCollection('modResource', $c);
-foreach ($rootResources as $parent) {
-    $children = $modx->getChildIds($parent->get('id'), $depth, array('context' => 'web'));
-
-    $resourceListWeb .=  "['".$parent->get('id')."', '".htmlspecialchars($parent->get('pagetitle'), ENT_QUOTES);
-    $resourceListWeb .= " (".$parent->get('id').")'],";
-
-    foreach ($children as $child) {
-        $resource = $modx->getObject('modResource', $child);
-
-        $resourceListWeb .= "['".$resource->get('id')."', '".htmlspecialchars($resource->get('pagetitle'), ENT_QUOTES);
-        $resourceListWeb .= " (".$resource->get('id').")'],";
-    }
-}
-
-$c = $modx->newQuery('modResource');
-$c->where(array(
-    'deleted' => false,
-    'published' => true,
-    'parent' => 0,
-    'context_key' => 'de'
-));
-$rootResources = $modx->getCollection('modResource', $c);
-foreach ($rootResources as $parent) {
-    $children       = $modx->getChildIds($parent->get('id'), $depth, array('context' => 'de'));
-
-    $resourceListDE .= "['".$parent->get('id')."', '".htmlspecialchars($parent->get('pagetitle'), ENT_QUOTES)." (".$parent->get('id').")'],";
-
-    foreach ($children as $child) {
-        $resource = $modx->getObject('modResource', $child);
-        $resourceListDE .= "['".$resource->get('id')."', '".htmlspecialchars($resource->get('pagetitle'),ENT_QUOTES)." (".$resource->get('id').")'],";
-
-    }
-}
-
 /*
- * Only retrieve templates from category 0. Other templates are Sterc Only or Newsletter templates.
+ * Retrieve templates.
  */
-$c = $modx->newQuery('modTemplate');
-$c->where(
-    array(
-        'category' => 0,
-    )
-);
-$templates = $modx->getCollection('modTemplate', $c);
+$templates = $modx->getCollection('modTemplate');
 foreach ($templates as $template) {
     $templateList .= "['".$template->get('id')."', '".htmlspecialchars($template->get('templatename'),ENT_QUOTES)."'],";
 }
 
+/*
+ * Retrieve contexts.
+ */
+$contexts = $modx->getCollection('modContext');
+$contextsList = array();
+
+if($contexts) {
+    foreach ($contexts as $context) {
+        if($context->get('key') === 'mgr') continue;
+
+        $contextsList[] = array(
+            'title' => $context->get('name'),
+            'xtype' => 'bendera-grid-items',
+            'id' => $context->get('key'),
+            'preventRender' => true,
+            'items' => array(
+                'html' => '',
+                'border' => false
+            )
+        );
+    }
+}
+
+/**
+ * Reg all scripts.
+ */
 $modx->regClientCSS($Bendera->config['cssUrl'].'mgr.css');
 $modx->regClientStartupScript($Bendera->config['jsUrl'].'mgr/bendera.js');
 $modx->regClientStartupScript($modx->getOption('manager_url').'assets/modext/util/datetime.js');
@@ -92,17 +68,11 @@ Ext.onReady(function() {
     Bendera.config = '.$modx->toJSON($Bendera->config).';
     Bendera.config.connector_url = "'.$Bendera->config['connectorUrl'].'";
     Bendera.action = "'.(!empty($_REQUEST['a']) ? $_REQUEST['a'] : 0).'";
+    Bendera.contexts = '.$modx->toJSON($contextsList).';
     Bendera.templateList = {
         templates: ['.trim($templateList, ','). ']
     };
 });
 </script>');
-
-/*
- Bendera.resourceList = {
-        web: ['.trim($resourceListWeb,',').'],
-        de: ['.trim($resourceListDE,',').'],
-    }
-*/
 
 return '';

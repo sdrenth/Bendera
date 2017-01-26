@@ -9,7 +9,7 @@ Bendera.page.Home = function(config) {
             xtype: 'bendera-panel-home'
             ,renderTo: 'bendera-panel-home-div'
         }]
-    }); 
+    });
     Bendera.page.Home.superclass.constructor.call(this,config);
 };
 Ext.extend(Bendera.page.Home,MODx.Component);

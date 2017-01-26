@@ -14,21 +14,10 @@ Bendera.panel.Home = function(config) {
             ,border: true
             ,activeItem: 0
             ,hideMode: 'offsets'
-            ,items: [{
-                title: _('bendera.items')
-                ,items: [{
-                    html: '<p>' + _('bendera.menu_desc') + '</p><br />'
-                    ,border: false
-                },{
-                    xtype: 'bendera-grid-items'
-                    ,id: 'web'
-                    ,preventRender: true
-                }]
-            }
+            ,items: Bendera.contexts
         }]
     });
     Bendera.panel.Home.superclass.constructor.call(this,config);
 };
 Ext.extend(Bendera.panel.Home,MODx.Panel);
 Ext.reg('bendera-panel-home',Bendera.panel.Home);
-//console.log(MODx);
