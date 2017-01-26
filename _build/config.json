@@ -3,7 +3,7 @@
     "lowCaseName": "bendera",
     "description": "",
     "author": "Sterc",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "package":{
         "menus": [{
             "text": "bendera",
@@ -29,12 +29,12 @@
         "systemSettings": [{
             "key": "user_name",
             "type": "textfield",
-            "area": "default",
+            "area": "Sterc Extra",
             "value": ""
         }, {
             "key": "user_email",
             "type": "textfield",
-            "area": "default",
+            "area": "Sterc Extra",
             "value": ""
         }]
     }

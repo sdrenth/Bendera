@@ -1,4 +1,7 @@
 <?php
+/**
+ * @package bendera
+ */
 $xpdo_meta_map['BenderaItem']= array (
   'package' => 'bendera',
   'version' => NULL,
