@@ -21,6 +21,9 @@
             "chunks": [{
                 "name": "benderaItem",
                 "file": "benderaitem.chunk.tpl"
+            }, {
+                "name": "benderaWrapper",
+                "file": "benderawrapper.chunk.tpl"
             }]
         },
         "systemSettings": [{
