@@ -33,21 +33,8 @@ if (!$item) return $modx->error->failure($modx->lexicon('bendera.item_err_nf'));
 /* output */
 $itemArray = $item->toArray('', true);
 switch ($itemArray['type']) {
-    case 'HTML':
-    case 'html':
-    case 'affiliate':
-    case 'Affiliate':
-        $itemArray['html'] = $itemArray['content'];
-        break;
-    case 'Flash':
-    case 'flash':
-        $itemArray['flash_swf'] = $itemArray['content'];
-        break;
     case 'image':
-    case 'Image':
-    case 'Afbeelding':
-        $itemArray['image'] = $itemArray['content'];
-        $itemArray['image_newimage'] = $itemArray['content'];
+        $itemArray['image_newimage'] = $itemArray['image'];
         break;
 }
 

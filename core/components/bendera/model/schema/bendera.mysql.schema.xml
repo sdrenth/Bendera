@@ -2,8 +2,10 @@
 <model package="bendera" baseClass="xPDOObject" platform="mysql" defaultEngine="MyISAM" phpdoc-package="bendera">
     <object class="BenderaItem" table="bendera_items" extends="xPDOSimpleObject">
         <field key="title" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
-        <field key="description" dbtype="text" phptype="text" null="false" default="" />  
+        <field key="description" dbtype="text" phptype="text" null="false" default="" />
 
+        <field key="image" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="html" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="content" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="size" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
 
@@ -15,7 +17,8 @@
         <field key="categories" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="createdon" dbtype="timestamp" phptype="timestamp"/>
         <field key="context" dbtype="varchar" precision="10" phptype="string" null="false" default="" />
-        <field key="url" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
-    
+        <field key="link_internal" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="link_external" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="active" dbtype="tinyint" precision="1" phptype="boolean" null="false" default="0"/>
     </object>    
 </model>

@@ -3,12 +3,12 @@
     "lowCaseName": "bendera",
     "description": "",
     "author": "Sterc",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "package":{
         "menus": [{
             "text": "bendera",
             "description": "bendera.menu_desc",
-            "action": "index"
+            "action": "home"
         }],
         "elements": {
             "categories": [{
@@ -19,14 +19,43 @@
                 "file": "bendera.snippet.php"
             }],
             "chunks": [{
-                "name": "benderaItem",
-                "file": "benderaitem.chunk.tpl"
+                "name": "benderaItemHTML",
+                "file": "benderaitemhtml.chunk.tpl"
+            },{
+                "name": "benderaItemButton",
+                "file": "benderaitembutton.chunk.tpl"
+            },{
+                "name": "benderaItemImage",
+                "file": "benderaitemimage.chunk.tpl"
+            },{
+                "name": "benderaItemAffiliate",
+                "file": "benderaitemaffiliate.chunk.tpl"
             }, {
                 "name": "benderaWrapper",
                 "file": "benderawrapper.chunk.tpl"
             }]
         },
         "systemSettings": [{
+           "key": "exclude_contexts",
+            "type": "textfield",
+            "area": "settings",
+            "value": ""
+        }, {
+            "key": "allowed_types",
+            "type": "textfield",
+            "area": "settings",
+            "value": ""
+        }, {
+            "key": "use_dates",
+            "type": "combo-boolean",
+            "area": "settings",
+            "value": "1"
+        }, {
+            "key": "use_categories",
+            "type": "combo-boolean",
+            "area": "settings",
+            "value": "1"
+        }, {
             "key": "user_name",
             "type": "textfield",
             "area": "Sterc Extra",

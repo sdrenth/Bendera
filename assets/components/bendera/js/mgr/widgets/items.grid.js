@@ -19,11 +19,10 @@ Ext.ux.Image = Ext.extend(Ext.Component, {
         this.fireEvent('load', this);
     },
     setSrc: function(src) {
-        if(src == '' || src == undefined) {
+        if (src == '' || src == undefined) {
             this.el.dom.src = Ext.BLANK_IMAGE_URL;
             Ext.getCmp('currimg').hide();
-        }
-        else {
+        } else {
             this.el.dom.src = MODx.config.base_url + src;
             Ext.getCmp('currimg').show();
         }
@@ -40,7 +39,7 @@ Bendera.grid.Items = function(config) {
             action: 'mgr/item/getlist'
             ,context: config.id
         }
-        ,fields: ['id', 'title', 'description', 'content', 'image', 'flash_swf', 'image_newimage',  'size', 'type', 'context', 'categories', 'startdate', 'enddate', 'url']
+        ,fields: ['id', 'title', 'description', 'content', 'html', 'image', 'image_newimage',  'size', 'type', 'context', 'categories', 'startdate', 'enddate', 'link_internal', 'link_external', 'active']
         ,autoHeight: true
         ,paging: true
         ,remoteSort: true
@@ -65,9 +64,9 @@ Bendera.grid.Items = function(config) {
     });
     Bendera.grid.Items.superclass.constructor.call(this,config);
 };
-Ext.extend(Bendera.grid.Items,MODx.grid.Grid,{
-    windows: {}
 
+Ext.extend(Bendera.grid.Items, MODx.grid.Grid, {
+    windows: {}
     ,getMenu: function() {
         var m = [];
         m.push({
@@ -81,7 +80,6 @@ Ext.extend(Bendera.grid.Items,MODx.grid.Grid,{
         });
         this.addContextMenuItem(m);
     }
-
     ,createItem: function(btn,e) {
         if (this.windows.createItem) {
             this.windows.createItem.destroy();
@@ -100,7 +98,7 @@ Ext.extend(Bendera.grid.Items,MODx.grid.Grid,{
         this.windows.createItem.show(e.target);
         Ext.getCmp('kind-of-ad').setValue('image');
     }
-    ,updateItem: function(btn,e) {
+    ,updateItem: function(btn, e) {
         if (!this.menu.record || !this.menu.record.id) return false;
         var r = this.menu.record;
         if (this.windows.updateItem) {
@@ -121,12 +119,13 @@ Ext.extend(Bendera.grid.Items,MODx.grid.Grid,{
         this.windows.updateItem.fp.getForm().setValues(r);
         
         Ext.getCmp('categories-box').setValue(r.categories);
-        //console.log(Ext.getCmp('resource-box'));
         this.windows.updateItem.show(e.target);
         Ext.getCmp('currimg').setSrc(this.menu.record.image);
     }
-    ,removeItem: function(btn,e) {
-        if (!this.menu.record) return false;
+    ,removeItem: function(btn, e) {
+        if (!this.menu.record) {
+            return false;
+        }
 
         MODx.msg.confirm({
             title: 'Advertentie verwijderen'
@@ -137,16 +136,21 @@ Ext.extend(Bendera.grid.Items,MODx.grid.Grid,{
                 ,id: this.menu.record.id
             }
             ,listeners: {
-                'success': {fn:function(r) { this.refresh(); },scope:this}
+                'success': {
+                    fn:function(r) {
+                        this.refresh();
+                    },
+                    scope:this
+                }
             }
         });
     }
 });
-Ext.reg('bendera-grid-items',Bendera.grid.Items);
-
+Ext.reg('bendera-grid-items', Bendera.grid.Items);
 
 Bendera.window.CreateItem = function(config) {
     config = config || {};
+
     this.ident = config.ident || Ext.id();
     Ext.applyIf(config,{
         title: 'Nieuwe advertentie'
@@ -168,10 +172,11 @@ Bendera.window.CreateItem = function(config) {
             xtype: 'modx-combo'
             ,fieldLabel: 'Soort advertentie'
             ,name: 'type'
+            ,hiddenName: 'type'
             ,id: 'kind-of-ad'
             ,width: 300
             ,allowBlank: false
-            ,emptyValue: 'html'
+            ,emptyValue: 'image'
             ,mode: 'local'
             ,store: new Ext.data.ArrayStore({
                 id: 0,
@@ -179,13 +184,20 @@ Bendera.window.CreateItem = function(config) {
                     'value',
                     'display'
                 ],
-                //data: [['html','HTML'],['flash','Flash'],['image','Afbeelding'],['affiliate','Affiliate']]
-                data: [['image','Afbeelding'],['affiliate','Affiliate']]
+                data: Bendera.config.types
             })
+            ,listeners: {
+                'afterrender': {
+                    fn: function() {
+                        Bendera.SetVisibleFields('image');
+                    }
+                    ,scope:this
+                }
+            }
             ,valueField: 'value'
             ,displayField: 'display'
         },{
-            xtype: 'xdatetime'
+            xtype: (MODx.config['bendera.use_dates'] == 1) ? 'xdatetime' : 'hidden'
             ,fieldLabel: _('bendera.startdate')
             ,dateFormat: MODx.config.manager_date_format
             ,timeFormat: MODx.config.manager_time_format
@@ -194,7 +206,7 @@ Bendera.window.CreateItem = function(config) {
             ,name: 'startdate'
             ,width: 300
         },{
-            xtype: 'xdatetime'
+            xtype: (MODx.config['bendera.use_dates'] == 1) ? 'xdatetime' : 'hidden'
             ,fieldLabel: _('bendera.enddate')
             ,dateFormat: MODx.config.manager_date_format
             ,timeFormat: MODx.config.manager_time_format
@@ -205,14 +217,13 @@ Bendera.window.CreateItem = function(config) {
         },{
             allowBlank:false,
             id:'categories-box',
-            xtype:'superboxselect',
+            xtype: (MODx.config['bendera.use_categories'] == 1) ? 'superboxselect' : 'hidden',
             fieldLabel: 'Advertentie plaatsen in de categorieën',
             emptyText: _('bendera.resourceselect'),
             resizable: true,
             minChars: 2,
             name: 'categories',
             hiddenName: 'categories[]',
-/*             anchor:'100%', */
             store: Bendera.templateList['templates'],
             context:config.context,
             mode: 'remote',
@@ -225,31 +236,6 @@ Bendera.window.CreateItem = function(config) {
             ,extraItemCls: 'x-tag'
             ,expandBtnCls: 'x-form-trigger'
             ,clearBtnCls: 'x-form-trigger'
-
-
-/*
-            xtype: 'superboxselect'
-            ,fieldLabel: 'Advertentie plaatsen in de categorieën'
-            ,name: 'resource[]'
-            ,allowBlank:false
-            ,store: resourceList
-            ,forceSelection : true
-            ,id:'resource-box'
-            ,allowQueryAll : false
-            ,displayField: 'text'
-            ,typeAhead:true
-            ,mode: 'remote'
-            ,editable: true
-            ,valueField: 'value'
-            ,pageSize: 5
-*/
-        },{
-            xtype: 'textfield'
-            ,fieldLabel: 'Url'
-            ,name: 'url'
-            ,id: 'url'
-            // ,allowBlank: false
-            ,width: 300
         },{
             xtype: 'textfield'
             ,fieldLabel: _('title')
@@ -257,6 +243,42 @@ Bendera.window.CreateItem = function(config) {
             ,id: 'title'
             ,allowBlank: false
             ,width: 300
+        },{
+            xtype: 'modx-combo'
+            ,url: MODx.config.connector_url
+            ,fields: ['id', 'pagetitle', 'context_key']
+            ,displayField: 'pagetitle'
+            ,valueField: 'id'
+            ,hiddenName: 'link_internal'
+            ,baseParams: {
+                action: 'resource/getlist'
+                ,limit: 20
+                ,sort: 'pagetitle'
+                ,dir: 'asc'
+            }
+            ,tpl: new Ext.XTemplate(
+                '<tpl for="."><div class="x-combo-list-item">'
+                ,'{pagetitle} ({id}) - {context_key}'
+                ,'</div></tpl>')
+            ,fieldLabel: _('bendera.link_internal')
+            ,id: 'link_internal'
+            ,name: 'link_internal'
+            ,paging: true
+            ,pageSize: 20
+            ,typeAhead: true
+            ,editable: true
+            ,forceSelection: true
+            ,width: 300
+        }, {
+            xtype: 'textfield'
+            ,fieldLabel: _('bendera.link_external')
+            ,name: 'link_external'
+            ,id: 'link_external'
+            ,width: 300
+        },{
+            xtype: 'label'
+            ,text: _('bendera.link_external-help')
+            ,cls: 'desc-under'
         },{
             xtype: 'textarea'
             ,fieldLabel: 'Beschrijving'
@@ -276,7 +298,7 @@ Bendera.window.CreateItem = function(config) {
             ,id: 'image'
         },{
             id: 'currimg'
-            ,fieldLabel: 'Afbeelding (500px breed)'
+            ,fieldLabel: 'Afbeelding'
             ,xtype: 'image'
         },{
             xtype: 'modx-combo-browser'
@@ -297,93 +319,35 @@ Bendera.window.CreateItem = function(config) {
                     }
                 }
             }
-        },{
-            xtype: 'modx-combo-browser'
-            ,name: 'flash_swf'
-            ,id: 'flash_swf'
-            ,width: 300
-            ,fieldLabel: 'Flash bestand'
-            ,allowedFileTypes: 'swf'
-            ,source: 2
+        }, {
+            xtype: 'checkbox'
+            ,fieldLabel: _('bendera.active')
+            ,name: 'active'
+            ,id: 'active'
+            ,inputValue: 1
+            ,uncheckedValue: 0
         }]
-
     });
     Bendera.window.CreateItem.superclass.constructor.call(this,config);
     var BenderaKind = Ext.getCmp('kind-of-ad');
-    if (BenderaKind) { BenderaKind.on('select',this.showFields); }
-    if(BenderaKind.getValue() == ''){
+    if (BenderaKind) {
+        BenderaKind.on('select',this.showFields);
+    }
+
+    if (BenderaKind.getValue() == '') {
         BenderaKind.setValue('image');
         Ext.getCmp('html').hide();
-        Ext.getCmp('flash_swf').hide();
     }
 };
-Ext.extend(Bendera.window.CreateItem,MODx.Window,{
+
+Ext.extend(Bendera.window.CreateItem, MODx.Window, {
     showFields: function(cb) {
-        var cbValue = cb.getValue();
-        var titleField = Ext.getCmp('title');
-        var descriptionField = Ext.getCmp('description');
-        var urlField = Ext.getCmp('url');
-        var htmlField = Ext.getCmp('html');
-        var imageField = Ext.getCmp('image');
-        var currimgField = Ext.getCmp('currimg');
-        var newimgField = Ext.getCmp('image_newimage');
-        var flashField = Ext.getCmp('flash_swf');
-        switch (cbValue) {
-            case 'html':
-                titleField.show();
-                descriptionField.show();
-                htmlField.show();
-                imageField.hide();
-                currimgField.hide();
-                newimgField.hide();
-                flashField.hide();
-
-            break;
-            case 'image':
-                titleField.show();
-                descriptionField.show();
-                htmlField.hide();
-                imageField.show();
-                currimgField.show();
-                newimgField.show();
-                flashField.hide();
-
-            break;
-            case 'flash':
-                titleField.show();
-                descriptionField.show();
-                htmlField.hide();
-                imageField.hide();
-                currimgField.hide();
-                newimgField.hide();
-                flashField.show();
-            break;
-            case 'affiliate':
-                titleField.show();
-                descriptionField.hide();
-                urlField.hide();
-                htmlField.show();
-                imageField.hide();
-                currimgField.hide();
-                newimgField.hide();
-                flashField.hide();
-            break;
-        }
+        Bendera.SetVisibleFields(cb.getValue());
     }
 });
-Ext.reg('bendera-window-item-create',Bendera.window.CreateItem);
-
+Ext.reg('bendera-window-item-create', Bendera.window.CreateItem);
 
 Bendera.window.UpdateItem = function(config) {
-    // var resourceList = new Ext.data.JsonStore({
-    //   url: Bendera.config.connector_url
-    //   ,baseParams:{
-    //     action: 'mgr/item/resourcelist'
-    //     ,context: config.context
-    //   }
-    //   ,fields: ['value','text']
-    // });
-
     var templateList = new Ext.data.JsonStore({
       url: Bendera.config.connector_url
       ,baseParams:{
@@ -391,8 +355,6 @@ Bendera.window.UpdateItem = function(config) {
       }
       ,fields: ['value','text']
     });
-    //console.log(config);
-    //console.log(resourceList);
 
     config = config || {};
     this.ident = config.ident || 'meuitem'+Ext.id();
@@ -416,6 +378,7 @@ Bendera.window.UpdateItem = function(config) {
             xtype: 'modx-combo'
             ,fieldLabel: 'Soort advertentie'
             ,name: 'type'
+            ,hiddenName: 'type'
             ,id: 'kind-of-ad'
             ,width: 300
             ,allowBlank: false
@@ -427,8 +390,7 @@ Bendera.window.UpdateItem = function(config) {
                     'value',
                     'display'
                 ],
-                //data: [['html','HTML'],['flash','Flash'],['image','Afbeelding'],['affiliate','Affiliate']]
-                data: [['image','Afbeelding'],['affiliate','Affiliate']]
+                data: Bendera.config.types
             })
             ,valueField: 'value'
             ,displayField: 'display'
@@ -439,7 +401,7 @@ Bendera.window.UpdateItem = function(config) {
             xtype:'hidden'
             ,name: 'context'
         },{
-            xtype: 'xdatetime'
+            xtype: (MODx.config['bendera.use_dates'] == 1) ? 'xdatetime' : 'hidden'
             ,fieldLabel: _('bendera.startdate')
             ,dateFormat: MODx.config.manager_date_format
             ,timeFormat: MODx.config.manager_time_format
@@ -448,7 +410,7 @@ Bendera.window.UpdateItem = function(config) {
             ,name: 'startdate'
             ,width: 300
         },{
-            xtype: 'xdatetime'
+            xtype: (MODx.config['bendera.use_dates'] == 1) ? 'xdatetime' : 'hidden'
             ,fieldLabel: _('bendera.enddate')
             ,dateFormat: MODx.config.manager_date_format
             ,timeFormat: MODx.config.manager_time_format
@@ -459,14 +421,13 @@ Bendera.window.UpdateItem = function(config) {
         },{
             allowBlank:false,
             id:'categories-box',
-            xtype:'superboxselect',
+            xtype: (MODx.config['bendera.use_categories'] == 1) ? 'superboxselect' : 'hidden',
             fieldLabel: 'Advertentie plaatsen in de categorieën',
             emptyText: _('bendera.resourceselect'),
             resizable: true,
             minChars: 2,
             name: 'categories',
             hiddenName: 'categories[]',
-/*             anchor:'100%', */
             store: Bendera.templateList['templates'],
             context:config.context,
             mode: 'remote',
@@ -487,12 +448,37 @@ Bendera.window.UpdateItem = function(config) {
             ,allowBlank: false
             ,width: 300
         },{
-            xtype: 'textfield'
-            ,fieldLabel: 'Url'
-            ,name: 'url'
-            ,id: 'url'
-            // ,allowBlank: false
+            xtype: 'modx-combo'
+            ,url: Bendera.config.connector_url
+            ,fields: ['id', 'pagetitle']
+            ,hiddenName: 'link_internal'
+            ,displayField: 'pagetitle'
+            ,valueField: 'id'
+            ,baseParams: {
+                action: 'mgr/resource/getlist'
+                ,limit: 20
+                ,sort: 'pagetitle'
+                ,dir: 'asc'
+            }
+            ,fieldLabel: _('bendera.link_internal')
+            ,id: 'link_internal'
+            ,name: 'link_internal'
+            ,paging: true
+            ,pageSize: 20
+            ,typeAhead: true
+            ,editable: true
+            ,forceSelection: true
             ,width: 300
+        }, {
+            xtype: 'textfield'
+            ,fieldLabel: _('bendera.link_external')
+            ,name: 'link_external'
+            ,id: 'link_external'
+            ,width: 300
+        },{
+            xtype: 'label'
+            ,text: _('bendera.link_external-help')
+            ,cls: 'desc-under'
         },{
             xtype: 'textarea'
             ,fieldLabel: 'Beschrijving'
@@ -503,7 +489,7 @@ Bendera.window.UpdateItem = function(config) {
         },{
             xtype: 'textarea'
             ,fieldLabel: 'HTML content'
-            ,name: 'content'
+            ,name: 'html'
             ,id: 'html'
             ,width: 300
             ,height: 220
@@ -512,7 +498,7 @@ Bendera.window.UpdateItem = function(config) {
             ,id: 'image'
         },{
             id: 'currimg'
-            ,fieldLabel: 'Afbeelding (500px breed)'
+            ,fieldLabel: 'Afbeelding'
             ,xtype: 'image'
         },{
             xtype: 'modx-combo-browser'
@@ -534,131 +520,85 @@ Bendera.window.UpdateItem = function(config) {
                     }
                 }
             }
-        },{
-            xtype: 'modx-combo-browser'
-            ,name: 'flash_swf'
-            ,id: 'flash_swf'
-            ,width: 300
-            ,fieldLabel: 'Flash bestand'
-            ,allowedFileTypes: 'swf'
-            ,source: 2
+        }, {
+            xtype: 'checkbox'
+            ,fieldLabel: _('bendera.active')
+            ,name: 'active'
+            ,id: 'active'
+            ,inputValue: 1
+            ,uncheckedValue: 0
         }]
     });
-    Bendera.window.UpdateItem.superclass.constructor.call(this,config);
-    //console.log(Ext.getCmp('resource-box'));
+    Bendera.window.UpdateItem.superclass.constructor.call(this, config);
 
     var BenderaKind = Ext.getCmp('kind-of-ad');
-    if (BenderaKind) { BenderaKind.on('select',this.showFields); }
-    if(BenderaKind.getValue() != ''){
-        var cbValue = BenderaKind.getValue();
-        var titleField = Ext.getCmp('title');
-        var descriptionField = Ext.getCmp('description');
-        var urlField = Ext.getCmp('url');
-        var htmlField = Ext.getCmp('html');
-        var imageField = Ext.getCmp('image');
-        var currimgField = Ext.getCmp('currimg');
-        var newimgField = Ext.getCmp('image_newimage');
-        var flashField = Ext.getCmp('flash_swf');
-        switch (cbValue) {
-            case 'html':
-            case 'HTML':
-                titleField.show();
-                descriptionField.show();
-                htmlField.show();
-                imageField.hide();
-                currimgField.hide();
-                newimgField.hide();
-                flashField.hide();
+    if (BenderaKind) {
+        BenderaKind.on('select', this.showFields);
+    }
 
-            break;
-            case 'image':
-            case 'Image':
-            case 'Afbeelding':
-                titleField.show();
-                descriptionField.show();
-                htmlField.hide();
-                imageField.show();
-                currimgField.show();
-                newimgField.show();
-                flashField.hide();
-
-            break;
-            case 'flash':
-            case 'Flash':
-                titleField.show();
-                descriptionField.show();
-                htmlField.hide();
-                imageField.hide();
-                currimgField.hide();
-                newimgField.hide();
-                flashField.show();
-            break;
-            case 'affiliate':
-            case 'Affiliate':
-                titleField.show();
-                descriptionField.hide();
-                urlField.hide();
-                htmlField.show();
-                imageField.hide();
-                currimgField.hide();
-                newimgField.hide();
-                flashField.hide();
-            break;
-        }
+    if (BenderaKind.getValue() != '') {
+        Bendera.SetVisibleFields(BenderaKind.getValue());
     }
 };
-Ext.extend(Bendera.window.UpdateItem,MODx.Window,{
+
+Ext.extend(Bendera.window.UpdateItem, MODx.Window, {
     showFields: function(cb) {
-        var cbValue = cb.getValue();
-        var titleField = Ext.getCmp('title');
-        var descriptionField = Ext.getCmp('description');
-        var urlField = Ext.getCmp('url');
-        var htmlField = Ext.getCmp('html');
-        var imageField = Ext.getCmp('image');
-        var currimgField = Ext.getCmp('currimg');
-        var newimgField = Ext.getCmp('image_newimage');
-        var flashField = Ext.getCmp('flash_swf');
-        switch (cbValue) {
-            case 'html':
-                titleField.show();
-                descriptionField.show();
-                htmlField.show();
-                imageField.hide();
-                currimgField.hide();
-                newimgField.hide();
-                flashField.hide();
-
-            break;
-            case 'image':
-                titleField.show();
-                descriptionField.show();
-                htmlField.hide();
-                imageField.show();
-                currimgField.show();
-                newimgField.show();
-                flashField.hide();
-
-            break;
-            case 'flash':
-                titleField.show();
-                descriptionField.show();
-                htmlField.hide();
-                imageField.hide();
-                currimgField.hide();
-                newimgField.hide();
-                flashField.show();
-            break;
-            case 'affiliate':
-                titleField.show();
-                descriptionField.hide();
-                urlField.hide();
-                htmlField.show();
-                imageField.hide();
-                currimgField.hide();
-                newimgField.hide();
-                flashField.hide();
-            break;
-        }
+        Bendera.SetVisibleFields(cb.getValue());
     }
 });
-Ext.reg('bendera-window-item-update',Bendera.window.UpdateItem);
+
+Ext.reg('bendera-window-item-update', Bendera.window.UpdateItem);
+
+Bendera.SetVisibleFields = function(value) {
+    var titleField        = Ext.getCmp('title'),
+        descriptionField  = Ext.getCmp('description'),
+        linkInternalField = Ext.getCmp('link_internal'),
+        linkExternalField = Ext.getCmp('link_external'),
+        htmlField         = Ext.getCmp('html'),
+        imageField        = Ext.getCmp('image'),
+        currimgField      = Ext.getCmp('currimg'),
+        newimgField       = Ext.getCmp('image_newimage');
+
+    switch (value) {
+        case 'button':
+            titleField.show();
+            descriptionField.hide();
+            htmlField.hide();
+            imageField.hide();
+            currimgField.hide();
+            newimgField.hide();
+            linkInternalField.show();
+            linkExternalField.show();
+            break;
+        case 'html':
+            titleField.show();
+            descriptionField.hide();
+            htmlField.show();
+            imageField.hide();
+            currimgField.hide();
+            newimgField.hide();
+            linkInternalField.hide();
+            linkExternalField.hide();
+            break;
+        case 'image':
+            titleField.show();
+            descriptionField.show();
+            htmlField.hide();
+            imageField.show();
+            currimgField.show();
+            newimgField.show();
+            linkInternalField.hide();
+            linkExternalField.hide();
+            break;
+        case 'affiliate':
+            titleField.show();
+            descriptionField.hide();
+            htmlField.show();
+            imageField.hide();
+            currimgField.hide();
+            newimgField.hide();
+            linkInternalField.hide();
+            linkExternalField.hide();
+            break;
+    }
+};

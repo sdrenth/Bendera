@@ -41,77 +41,161 @@ class Bendera
             $config,
             $this->modx->getOption('core_path').'components/bendera/'
         );
+
         $assetsUrl = $this->modx->getOption(
             'bendera.assets_url',
             $config,
             $this->modx->getOption('assets_url').'components/bendera/'
         );
-        $connectorUrl = $assetsUrl.'connector.php';
 
-        $this->config = array_merge(array(
-            'assetsUrl' => $assetsUrl,
-            'cssUrl' => $assetsUrl.'css/',
-            'jsUrl' => $assetsUrl.'js/',
-            'imagesUrl' => $assetsUrl.'images/',
-            'connectorUrl' => $connectorUrl,
-            'corePath' => $corePath,
-            'modelPath' => $corePath.'model/',
-            'chunksPath' => $corePath.'elements/chunks/',
-            'chunkSuffix' => '.chunk.tpl',
-            'snippetsPath' => $corePath.'elements/snippets/',
-            'processorsPath' => $corePath.'processors/',
-        ), $config);
+        $connectorUrl = $assetsUrl . 'connector.php';
+
+        $this->modx->lexicon->load('bendera:default');
+
+        $this->config = array_merge(
+            array(
+                'corePath'        => $corePath,
+                'assetsUrl'       => $assetsUrl,
+                'cssUrl'          => $assetsUrl . 'css/',
+                'jsUrl'           => $assetsUrl . 'js/',
+                'imagesUrl'       => $assetsUrl . 'images/',
+                'controllersPath' => $corePath . 'controllers/',
+                'connectorUrl'    => $connectorUrl,
+                'modelPath'       => $corePath . 'model/',
+                'chunksPath'      => $corePath . 'elements/chunks/',
+                'chunkSuffix'     => '.chunk.tpl',
+                'snippetsPath'    => $corePath . 'elements/snippets/',
+                'templatesPath'   => $corePath . 'templates/',
+                'processorsPath'  => $corePath . 'processors/',
+                'types'           => $this->getTypes(),
+            ),
+            $config
+        );
 
         $this->modx->addPackage('bendera', $this->config['modelPath']);
-        $this->modx->lexicon->load('bendera:default');
     }
 
     /**
-     * Initializes Bendera into different contexts.
+     * Return available Bendera types.
      *
-     * @access public
-     *
-     * @param string $ctx The context to load. Defaults to web.
-     *
-     * @return bool|string
+     * @return array
      */
-    public function initialize($ctx = 'web')
+    public function getTypes()
     {
-        switch ($ctx) {
-            case 'mgr':
-                if (!$this->modx->loadClass(
-                    'bendera.request.BenderaControllerRequest',
-                    $this->config['modelPath'],
-                    true,
-                    true
-                )) {
-                    return 'Could not load controller request handler.';
-                }
-                $this->request = new BenderaControllerRequest($this);
+        $types        = array();
+        $defaultTypes = array(
+            'html',
+            'button',
+            'image',
+            'affiliate'
+        );
 
-                return $this->request->handleRequest();
-            break;
-            case 'connector':
-                if (!$this->modx->loadClass(
-                    'bendera.request.BenderaConnectorRequest',
-                    $this->config['modelPath'],
-                    true,
-                    true
-                )) {
-                    return 'Could not load connector request handler.';
-                }
-                $this->request = new BenderaConnectorRequest($this);
+        $allowedTypes = str_replace(' ', '', $this->modx->getOption('bendera.allowed_types'));
+        if (!empty($allowedTypes)) {
+            $allowedTypesArr = explode(',', $allowedTypes);
 
-                return $this->request->handle();
-            break;
-            default:
-                /* if you wanted to do any generic frontend stuff here.
-                 * For example, if you have a lot of snippets but common code
-                 * in them all at the beginning, you could put it here and just
-                 * call $bendera->initialize($modx->context->get('key'));
-                 * which would run this.
-                 */
-            break;
+            foreach ($defaultTypes as $key => $type) {
+                if (!in_array($type, $allowedTypesArr)) {
+                    unset($defaultTypes[$key]);
+                }
+            }
         }
+
+        foreach($defaultTypes as $type) {
+            $types[] = array(
+                $type,
+                $this->modx->lexicon('bendera.type.' . $type)
+            );
+        }
+
+        return $types;
+    }
+
+    /**
+     * @param $scriptProperties
+     *
+     * @return string
+     */
+    public function getBenderaItems($scriptProperties)
+    {
+        $ids           = $this->modx->getOption('ids', $scriptProperties, null);
+        $limit         = $this->modx->getOption('limit', $scriptProperties, 1);
+        $sortBy        = $this->modx->getOption('sortBy', $scriptProperties, 'startdate');
+        $sortDir       = $this->modx->getOption('sortDir', $scriptProperties, 'ASC');
+        $toPlaceholder = $this->modx->getOption('toPlaceholder', $scriptProperties, false);
+        $types         = $this->modx->getOption('types', $scriptProperties, null);
+        $contexts      = $this->modx->getOption('contexts', $scriptProperties, null);
+
+        /* Tpls. */
+        $htmlTpl      = $this->modx->getOption('htmlTpl', $scriptProperties, 'benderaItemHTML');
+        $buttonTpl    = $this->modx->getOption('buttonTpl', $scriptProperties, 'benderaItemButton');
+        $imageTpl     = $this->modx->getOption('imageTpl', $scriptProperties, 'benderaItemImage');
+        $affiliateTpl = $this->modx->getOption('affiliateTpl', $scriptProperties, 'benderaItemAffiliate');
+        $wrapper      = $this->modx->getOption('wrapperTpl', $scriptProperties, 'benderaWrapper');
+
+        $template = ($this->modx->resource) ? $this->modx->resource->get('template') : null;
+        $resource = ($this->modx->resource) ? $this->modx->resource->get('id') : null;
+        $date     = date('Y-m-d H:i:s');
+
+        $c = $this->modx->newQuery('BenderaItem');
+        $c->select('id,title,description,content,size,startdate,enddate,type,resource,categories,createdon,context,link_internal,link_external');
+        $c->sortby($sortBy, $sortDir);
+
+        $where = array(
+            'active' => 1
+        );
+
+        $useDates = (bool) $this->modx->getOption('bendera.use_dates');
+        if ($useDates) {
+            $where[] = array(
+                'startdate:<=' => $date,
+                'enddate:>='   => $date
+            );
+        }
+
+        if ($contexts) {
+            $where[] = array('context:IN' => explode(',', $contexts));
+        }
+
+        if ($types) {
+            $where[] = array('type:IN' => explode(',', $types));
+        }
+
+        if (isset($ids)) {
+            $where[] = array('id:IN' => explode(',', $ids));
+        }
+
+        $c->where($where);
+        $c->limit($limit);
+        $c->prepare();
+        $query = $c->toSQL();
+
+        $filter  = "AND (`categories` = '' OR FIND_IN_SET(" . $template . ", `categories`) > 0)";
+        $filter .= "AND (`resource` = '' OR FIND_IN_SET(" . $resource . ", `resource`) > 0)";
+        $filter .= " ORDER BY";
+
+        $query   = str_replace('ORDER BY', $filter, $query);
+        $results = $this->modx->query($query);
+        $rows    = '';
+        if ($results) {
+            while ($item = $results->fetch(PDO::FETCH_ASSOC)) {
+                $rows .= $this->modx->getChunk($tpl, $item);
+            }
+        }
+
+        if (!empty($wrapper)) {
+            $output = $this->modx->getChunk($wrapper, array('output' => $rows));
+        } else {
+            $output = $rows;
+        }
+
+        if (!empty($toPlaceholder)) {
+            /* if using a placeholder, output nothing and set output to specified placeholder */
+            $this->modx->setPlaceholder($toPlaceholder, $output);
+            return '';
+        }
+
+        /* by default just return output */
+        return $output;
     }
 }

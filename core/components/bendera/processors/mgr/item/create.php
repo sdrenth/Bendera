@@ -26,23 +26,6 @@
  * @subpackage processors
  */
 $item = $modx->newObject('BenderaItem');
-switch ($_POST['type']) {
-    case 'HTML':
-    case 'html':
-    case 'affiliate':
-    case 'Affiliate':
-        $_POST['content'] = $_POST['html'];
-        break;
-    case 'Flash':
-    case 'flash':
-        $_POST['content'] = $_POST['flash_swf'];
-        break;
-    case 'image':
-    case 'Image':
-    case 'Afbeelding':
-        $_POST['content'] = $_POST['image'];
-        break;
-}
 
 $_POST['categories'] = implode(',', $_POST['categories']);
 $_POST['createdon'] = time();

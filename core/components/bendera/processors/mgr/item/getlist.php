@@ -42,23 +42,12 @@ $list = array();
 foreach ($items as $item) {
     $itemArray = $item->toArray();
     switch ($itemArray['type']) {
-        case 'HTML':
-        case 'html':
-        case 'Affiliate':
-        case 'affiliate':
-            $itemArray['html'] = $itemArray['content'];
-            break;
-        case 'Flash':
-        case 'flash':
-            $itemArray['flash_swf'] = $itemArray['content'];
-            break;
         case 'image':
-        case 'Image':
-        case 'Afbeelding':
-            $itemArray['image'] = $itemArray['content'];
-            $itemArray['image_newimage'] = $itemArray['content'];
+            $itemArray['image_newimage'] = $itemArray['image'];
             break;
     }
+
+    $itemArray['image_newimage'] = $itemArray['image'];
 
     $itemArray['resource'] = str_replace('||', ',', $itemArray['resource']);
     $list[]= $itemArray;

@@ -28,7 +28,7 @@
  trigger_error(json_encode($_POST),E_USER_ERROR);
 trigger_error(json_encode($scriptproperties),E_USER_WARNING);
 */
-require_once dirname(dirname(dirname(dirname(__FILE__)))).'/config.core.php';
+require_once dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/config.core.php';
 require_once MODX_CORE_PATH.'config/'.MODX_CONFIG_KEY.'.inc.php';
 require_once MODX_CONNECTORS_PATH.'index.php';
 
