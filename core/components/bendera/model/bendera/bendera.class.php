@@ -86,6 +86,7 @@ class Bendera
         $defaultTypes = array(
             'button',
             'banner',
+            'chunk',
             'html',
             'image',
             'affiliate'
@@ -140,7 +141,7 @@ class Bendera
         $date     = date('Y-m-d H:i:s');
 
         $c = $this->modx->newQuery('BenderaItem');
-        $c->select('id,title,description,content,size,startdate,enddate,type,resource,categories,createdon,context,link_internal,link_external');
+        $c->select('id,title,description,image,content,size,startdate,enddate,type,resource,categories,createdon,context,link_internal,link_external');
         $c->sortby($sortBy, $sortDir);
 
         $where = array(
@@ -172,15 +173,21 @@ class Bendera
         $c->prepare();
         $query = $c->toSQL();
 
-        $filter  = "AND (`categories` = '' OR FIND_IN_SET(" . $template . ", `categories`) > 0)";
-        $filter .= "AND (`resource` = '' OR FIND_IN_SET(" . $resource . ", `resource`) > 0)";
+        $useCategories = (bool) $this->modx->getOption('bendera.use_categories');
+        if ($useCategories) {
+            $filter  = "AND (`categories` = '' OR FIND_IN_SET(" . $template . ", `categories`) > 0)";
+            $filter .= "AND (`resource` = '' OR FIND_IN_SET(" . $resource . ", `resource`) > 0)";
+        }
+
         $filter .= " ORDER BY";
 
         $query   = str_replace('ORDER BY', $filter, $query);
         $results = $this->modx->query($query);
         $rows    = '';
+
         if ($results) {
             while ($item = $results->fetch(PDO::FETCH_ASSOC)) {
+                $tpl = ${$item['type'] . 'Tpl'};
                 $rows .= $this->modx->getChunk($tpl, $item);
             }
         }
