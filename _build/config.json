@@ -22,6 +22,9 @@
                 "name": "benderaItemHTML",
                 "file": "benderaitemhtml.chunk.tpl"
             },{
+                "name": "benderaItemBanner",
+                "file": "benderaitembanner.chunk.tpl"
+            },{
                 "name": "benderaItemButton",
                 "file": "benderaitembutton.chunk.tpl"
             },{

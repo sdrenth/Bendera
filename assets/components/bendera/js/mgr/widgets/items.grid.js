@@ -567,6 +567,17 @@ Bendera.SetVisibleFields = function(value) {
         newimgField           = Ext.getCmp('image_newimage');
 
     switch (value) {
+        case 'banner':
+            titleField.show();
+            descriptionField.hide();
+            htmlField.hide();
+            imageField.show();
+            currimgField.show();
+            newimgField.show();
+            linkInternalField.show();
+            linkExternalField.show();
+            linkExternalFieldHelp.show();
+            break;
         case 'button':
             titleField.show();
             descriptionField.hide();

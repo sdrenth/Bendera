@@ -84,8 +84,9 @@ class Bendera
     {
         $types        = array();
         $defaultTypes = array(
-            'html',
             'button',
+            'banner',
+            'html',
             'image',
             'affiliate'
         );

@@ -68,6 +68,7 @@ $_lang['setting_bendera.use_dates_desc']        = 'Enable/Disable the use of sta
 
 /* Types. */
 $_lang['bendera.type.html']       = 'HTML';
+$_lang['bendera.type.banner']     = 'Banner';
 $_lang['bendera.type.button']     = 'Button';
 $_lang['bendera.type.image']      = 'Image';
 $_lang['bendera.type.affiliate']  = 'Affiliate';
