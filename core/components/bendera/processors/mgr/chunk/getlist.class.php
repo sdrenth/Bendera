@@ -15,15 +15,17 @@ class BenderamodChunkGetListProcessor extends modObjectGetListProcessor {
     public $classKey = 'modChunk';
     public $languageTopics = array('chunk', 'category');
 
+    public $chunks;
+
     public function prepareQueryBeforeCount(xPDOQuery $c)
     {
         $chunkConfig = $this->modx->getOption('bendera.chunks_config');
         if (!empty($chunkConfig)) {
-            $chunks = json_decode($chunkConfig, true);
+            $this->chunks = json_decode($chunkConfig, true);
 
             $chunkIds = array();
-            if ($chunks) {
-                foreach ($chunks as $chunk) {
+            if ($this->chunks) {
+                foreach ($this->chunks as $chunk) {
                     $chunkIds[] = $chunk['id'];
                 }
             }
@@ -34,6 +36,23 @@ class BenderamodChunkGetListProcessor extends modObjectGetListProcessor {
         $c->where($where);
 
         return $c;
+    }
+
+    public function prepareRow($object)
+    {
+        if ($object) {
+            $objectArray = $object->toArray();
+
+            if (!empty($this->chunks)) {
+                foreach ($this->chunks as $chunk) {
+                    if ((int) $chunk['id'] === $objectArray['id']) {
+                        $objectArray['name'] = $chunk['name'];
+                    }
+                }
+            }
+
+            return $objectArray;
+        }
     }
 }
 
