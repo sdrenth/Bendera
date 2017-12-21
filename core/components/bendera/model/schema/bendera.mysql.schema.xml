@@ -5,6 +5,7 @@
         <field key="description" dbtype="text" phptype="text" null="false" default="" />
 
         <field key="image" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="chunk" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="html" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="content" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="size" dbtype="varchar" precision="255" phptype="string" null="false" default="" />

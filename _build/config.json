@@ -28,6 +28,9 @@
                 "name": "benderaItemButton",
                 "file": "benderaitembutton.chunk.tpl"
             },{
+                "name": "benderaItemChunk",
+                "file": "benderaitemchunk.chunk.tpl"
+            },{
                 "name": "benderaItemImage",
                 "file": "benderaitemimage.chunk.tpl"
             },{
@@ -45,6 +48,11 @@
             "value": ""
         }, {
             "key": "allowed_types",
+            "type": "textfield",
+            "area": "settings",
+            "value": ""
+        }, {
+            "key": "chunks_config",
             "type": "textfield",
             "area": "settings",
             "value": ""

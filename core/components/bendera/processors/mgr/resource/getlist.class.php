@@ -44,14 +44,16 @@ class BenderamodResourceGetListProcessor extends modObjectGetListProcessor
         return $c;
     }
 
-    public function prepareRow(xPDOObject $object)
+    public function prepareRow($object)
     {
-        $charset = $this->modx->getOption('modx_charset', null, 'UTF-8');
-        $objectArray = $object->toArray();
-        $objectArray['pagetitle'] = htmlentities($objectArray['pagetitle'], ENT_COMPAT, $charset);
-        $objectArray['pagetitle'] = $objectArray['pagetitle'] . ' (' . $objectArray['id'] . ')' . ' - ' . $this->contextNames[$objectArray['context_key']];
+        if ($object) {
+            $charset = $this->modx->getOption('modx_charset', null, 'UTF-8');
+            $objectArray = $object->toArray();
+            $objectArray['pagetitle'] = htmlentities($objectArray['pagetitle'], ENT_COMPAT, $charset);
+            $objectArray['pagetitle'] = $objectArray['pagetitle'] . ' (' . $objectArray['id'] . ')' . ' - ' . $this->contextNames[$objectArray['context_key']];
 
-        return $objectArray;
+            return $objectArray;
+        }
     }
 
     /**

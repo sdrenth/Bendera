@@ -56,5 +56,6 @@ $_lang['bendera.link_external-help'] = 'Indien gevuld wordt de interne link over
 $_lang['bendera.type.html']       = 'HTML';
 $_lang['bendera.type.banner']     = 'Banner';
 $_lang['bendera.type.button']     = 'Button';
+$_lang['bendera.type.chunk']      = 'Blok';
 $_lang['bendera.type.image']      = 'Afbeelding';
 $_lang['bendera.type.affiliate']  = 'Affiliate';

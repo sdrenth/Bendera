@@ -9,4 +9,7 @@ Bendera 1.0.1
 - Added option to exclude contexts from Bendera
 - Added option to hide fromdate/enddate fields
 - Added option to hide categorie field
+- Added option for configuring chunk select options
 - Added a different chunk for each bendera type
+- Added banner option type
+- Added chunk option type

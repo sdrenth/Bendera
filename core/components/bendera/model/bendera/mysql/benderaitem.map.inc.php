@@ -12,6 +12,7 @@ $xpdo_meta_map['BenderaItem']= array (
     'title' => '',
     'description' => '',
     'image' => '',
+    'chunk' => '',
     'html' => '',
     'content' => '',
     'size' => '',
@@ -44,6 +45,14 @@ $xpdo_meta_map['BenderaItem']= array (
       'default' => '',
     ),
     'image' => 
+    array (
+      'dbtype' => 'varchar',
+      'precision' => '255',
+      'phptype' => 'string',
+      'null' => false,
+      'default' => '',
+    ),
+    'chunk' => 
     array (
       'dbtype' => 'varchar',
       'precision' => '255',

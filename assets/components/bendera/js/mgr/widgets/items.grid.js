@@ -39,7 +39,7 @@ Bendera.grid.Items = function(config) {
             action: 'mgr/item/getlist'
             ,context: config.id
         }
-        ,fields: ['id', 'title', 'description', 'content', 'html', 'image', 'image_newimage',  'size', 'type', 'context', 'categories', 'startdate', 'enddate', 'link_internal', 'link_external', 'active']
+        ,fields: ['id', 'title', 'description', 'content', 'chunk', 'html', 'image', 'image_newimage',  'size', 'type', 'context', 'categories', 'startdate', 'enddate', 'link_internal', 'link_external', 'active']
         ,autoHeight: true
         ,paging: true
         ,remoteSort: true
@@ -246,6 +246,28 @@ Bendera.window.CreateItem = function(config) {
         },{
             xtype: 'modx-combo'
             ,url: Bendera.config.connector_url
+            ,fields: ['id', 'name']
+            ,hiddenName: 'chunk'
+            ,displayField: 'name'
+            ,valueField: 'id'
+            ,baseParams: {
+                action: 'mgr/chunk/getlist'
+                ,limit: 20
+                ,sort: 'name'
+                ,dir: 'asc'
+            }
+            ,fieldLabel: _('bendera.type.chunk')
+            ,id: 'chunk'
+            ,name: 'chunk'
+            ,paging: true
+            ,pageSize: 20
+            ,typeAhead: true
+            ,editable: true
+            ,forceSelection: true
+            ,width: 300
+        },{
+            xtype: 'modx-combo'
+            ,url: Bendera.config.connector_url
             ,fields: ['id', 'pagetitle']
             ,hiddenName: 'link_internal'
             ,displayField: 'pagetitle'
@@ -447,6 +469,29 @@ Bendera.window.UpdateItem = function(config) {
         },{
             xtype: 'modx-combo'
             ,url: Bendera.config.connector_url
+            ,fields: ['id', 'name']
+            ,hiddenName: 'chunk'
+            ,displayField: 'name'
+            ,valueField: 'id'
+            ,baseParams: {
+                action: 'mgr/chunk/getlist'
+                ,limit: 20
+                ,value: config.record.chunk
+                ,sort: 'name'
+                ,dir: 'asc'
+            }
+            ,fieldLabel: _('bendera.type.chunk')
+            ,id: 'chunk'
+            ,name: 'chunk'
+            ,paging: true
+            ,pageSize: 20
+            ,typeAhead: true
+            ,editable: true
+            ,forceSelection: true
+            ,width: 300
+        },{
+            xtype: 'modx-combo'
+            ,url: Bendera.config.connector_url
             ,fields: ['id', 'pagetitle']
             ,hiddenName: 'link_internal'
             ,displayField: 'pagetitle'
@@ -473,7 +518,7 @@ Bendera.window.UpdateItem = function(config) {
                        console.log(this.value);
                     }
                 }
-    }
+            }
         }, {
             xtype: 'textfield'
             ,fieldLabel: _('bendera.link_external')
@@ -557,6 +602,7 @@ Ext.reg('bendera-window-item-update', Bendera.window.UpdateItem);
 
 Bendera.SetVisibleFields = function(value) {
     var titleField            = Ext.getCmp('title'),
+        chunkField            = Ext.getCmp('chunk'),
         descriptionField      = Ext.getCmp('description'),
         linkInternalField     = Ext.getCmp('link_internal'),
         linkExternalField     = Ext.getCmp('link_external'),
@@ -569,6 +615,7 @@ Bendera.SetVisibleFields = function(value) {
     switch (value) {
         case 'banner':
             titleField.show();
+            chunkField.hide();
             descriptionField.hide();
             htmlField.hide();
             imageField.show();
@@ -580,6 +627,7 @@ Bendera.SetVisibleFields = function(value) {
             break;
         case 'button':
             titleField.show();
+            chunkField.hide();
             descriptionField.hide();
             htmlField.hide();
             imageField.hide();
@@ -589,8 +637,21 @@ Bendera.SetVisibleFields = function(value) {
             linkExternalField.show();
             linkExternalFieldHelp.show();
             break;
+        case 'chunk':
+            titleField.show();
+            chunkField.show();
+            descriptionField.hide();
+            htmlField.hide();
+            imageField.hide();
+            currimgField.hide();
+            newimgField.hide();
+            linkInternalField.hide();
+            linkExternalField.hide();
+            linkExternalFieldHelp.hide();
+            break;
         case 'html':
             titleField.show();
+            chunkField.hide();
             descriptionField.hide();
             htmlField.show();
             imageField.hide();
@@ -602,6 +663,7 @@ Bendera.SetVisibleFields = function(value) {
             break;
         case 'image':
             titleField.show();
+            chunkField.hide();
             descriptionField.show();
             htmlField.hide();
             imageField.show();
@@ -613,6 +675,7 @@ Bendera.SetVisibleFields = function(value) {
             break;
         case 'affiliate':
             titleField.show();
+            chunkField.hide();
             descriptionField.hide();
             htmlField.show();
             imageField.hide();

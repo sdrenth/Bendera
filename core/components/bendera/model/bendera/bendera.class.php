@@ -86,11 +86,19 @@ class Bendera
         $defaultTypes = array(
             'button',
             'banner',
-            'chunk',
             'html',
             'image',
             'affiliate'
         );
+
+        $chunkConfig = $this->modx->getOption('bendera.chunks_config');
+        if (!empty($chunkConfig)) {
+            $chunks = json_decode($chunkConfig, true);
+
+            if (!empty($chunks)) {
+                $defaultTypes[] = 'chunk';
+            }
+        }
 
         $allowedTypes = str_replace(' ', '', $this->modx->getOption('bendera.allowed_types'));
         if (!empty($allowedTypes)) {
@@ -132,6 +140,7 @@ class Bendera
         $htmlTpl      = $this->modx->getOption('htmlTpl', $scriptProperties, 'benderaItemHTML');
         $bannerTpl    = $this->modx->getOption('bannerTpl', $scriptProperties, 'benderaItemBanner');
         $buttonTpl    = $this->modx->getOption('buttonTpl', $scriptProperties, 'benderaItemButton');
+        $chunkTpl     = $this->modx->getOption('chunkTpl', $scriptProperties, 'benderaItemChunk');
         $imageTpl     = $this->modx->getOption('imageTpl', $scriptProperties, 'benderaItemImage');
         $affiliateTpl = $this->modx->getOption('affiliateTpl', $scriptProperties, 'benderaItemAffiliate');
         $wrapper      = $this->modx->getOption('wrapperTpl', $scriptProperties, 'benderaWrapper');
@@ -141,7 +150,7 @@ class Bendera
         $date     = date('Y-m-d H:i:s');
 
         $c = $this->modx->newQuery('BenderaItem');
-        $c->select('id,title,description,image,content,size,startdate,enddate,type,resource,categories,createdon,context,link_internal,link_external');
+        $c->select('id,title,chunk,description,image,content,size,startdate,enddate,type,resource,categories,createdon,context,link_internal,link_external');
         $c->sortby($sortBy, $sortDir);
 
         $where = array(
@@ -184,10 +193,18 @@ class Bendera
         $query   = str_replace('ORDER BY', $filter, $query);
         $results = $this->modx->query($query);
         $rows    = '';
-
         if ($results) {
             while ($item = $results->fetch(PDO::FETCH_ASSOC)) {
                 $tpl = ${$item['type'] . 'Tpl'};
+
+                if ($item['type'] === 'chunk') {
+                    $chunk = $this->modx->getObject('modChunk', $item['chunk']);
+
+                    if ($chunk) {
+                        $item['chunk'] = $chunk->get('name');
+                    }
+                }
+
                 $rows .= $this->modx->getChunk($tpl, $item);
             }
         }
