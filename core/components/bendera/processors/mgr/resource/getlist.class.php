@@ -25,7 +25,6 @@ class BenderamodResourceGetListProcessor extends modObjectGetListProcessor
     {
         parent::__construct($modx, $properties);
 
-
         $ctxs = $this->modx->getIterator('modContext');
         foreach ($ctxs as $ctx) {
             $this->contextNames[$ctx->get('key')] = $ctx->get('name');
@@ -36,7 +35,9 @@ class BenderamodResourceGetListProcessor extends modObjectGetListProcessor
     {
         $conditions = $this->getProperties();
 
-        if (!empty($conditions['query'])) $where['pagetitle:LIKE'] = '%'.$conditions['query'].'%';
+        if (!empty($conditions['query'])) {
+            $where['pagetitle:LIKE'] = '%'.$conditions['query'].'%';
+        }
 
         $c->where($where);
 
@@ -49,7 +50,54 @@ class BenderamodResourceGetListProcessor extends modObjectGetListProcessor
         $objectArray = $object->toArray();
         $objectArray['pagetitle'] = htmlentities($objectArray['pagetitle'], ENT_COMPAT, $charset);
         $objectArray['pagetitle'] = $objectArray['pagetitle'] . ' (' . $objectArray['id'] . ')' . ' - ' . $this->contextNames[$objectArray['context_key']];
+
         return $objectArray;
+    }
+
+    /**
+     * Get the data of the query
+     * @return array
+     */
+    public function getData()
+    {
+        $data = array();
+        $limit = intval($this->getProperty('limit'));
+        $start = intval($this->getProperty('start'));
+
+        /* query for chunks */
+        $c = $this->modx->newQuery($this->classKey);
+        $c = $this->prepareQueryBeforeCount($c);
+        $data['total'] = $this->modx->getCount($this->classKey,$c);
+        $c = $this->prepareQueryAfterCount($c);
+
+        $sortClassKey = $this->getSortClassKey();
+        $sortKey = $this->modx->getSelectColumns($sortClassKey,$this->getProperty('sortAlias',$sortClassKey),'',array($this->getProperty('sort')));
+        if (empty($sortKey)) $sortKey = $this->getProperty('sort');
+        $c->sortby($sortKey,$this->getProperty('dir'));
+        if ($limit > 0) {
+            $c->limit($limit,$start);
+        }
+
+        $data['results'] = $this->modx->getCollection($this->classKey, $c);
+
+        /* Check on update if the value is returned on paged results. Else add it to result for displaying correct value. */
+        $conditions = $this->getProperties();
+        if (isset($conditions['value']) && !empty($conditions['value'])) {
+            if (!empty($data['results'])) {
+                $alreadyExists = false;
+                foreach ($data['results'] as $result) {
+                    if ($result->get('id') === $conditions['value']) {
+                        $alreadyExists = true;
+                    }
+                }
+            }
+        }
+
+        if (!$alreadyExists) {
+            $data['results'][] = $this->modx->getObject('modResource', $conditions['value']);
+        }
+
+        return $data;
     }
 }
 
