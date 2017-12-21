@@ -70,14 +70,14 @@ Ext.extend(Bendera.grid.Items, MODx.grid.Grid, {
     ,getMenu: function() {
         var m = [];
         m.push({
-            text: 'Advertentie aanpassen'
-            ,handler: this.updateItem
-        });
+                   text: 'Advertentie aanpassen'
+                   ,handler: this.updateItem
+               });
         m.push('-');
         m.push({
-            text: 'Advertentie verwijderen'
-            ,handler: this.removeItem
-        });
+                   text: 'Advertentie verwijderen'
+                   ,handler: this.removeItem
+               });
         this.addContextMenuItem(m);
     }
     ,createItem: function(btn,e) {
@@ -107,17 +107,17 @@ Ext.extend(Bendera.grid.Items, MODx.grid.Grid, {
         if (this.windows.createItem) {
             this.windows.createItem.close();
         }
-            this.windows.updateItem = MODx.load({
-                xtype: 'bendera-window-item-update'
-                ,context: this.config.id
-                ,record: r
-                ,listeners: {
-                    'success': {fn:function() { this.refresh(); },scope:this}
-                }
-            });
+        this.windows.updateItem = MODx.load({
+            xtype: 'bendera-window-item-update'
+            ,context: this.config.id
+            ,record: r
+            ,listeners: {
+                'success': {fn:function() { this.refresh(); },scope:this}
+            }
+        });
         this.windows.updateItem.fp.getForm().reset();
         this.windows.updateItem.fp.getForm().setValues(r);
-        
+
         Ext.getCmp('categories-box').setValue(r.categories);
         this.windows.updateItem.show(e.target);
         Ext.getCmp('currimg').setSrc(this.menu.record.image);
@@ -245,21 +245,17 @@ Bendera.window.CreateItem = function(config) {
             ,width: 300
         },{
             xtype: 'modx-combo'
-            ,url: MODx.config.connector_url
-            ,fields: ['id', 'pagetitle', 'context_key']
+            ,url: Bendera.config.connector_url
+            ,fields: ['id', 'pagetitle']
+            ,hiddenName: 'link_internal'
             ,displayField: 'pagetitle'
             ,valueField: 'id'
-            ,hiddenName: 'link_internal'
             ,baseParams: {
-                action: 'resource/getlist'
+                action: 'mgr/resource/getlist'
                 ,limit: 20
                 ,sort: 'pagetitle'
                 ,dir: 'asc'
             }
-            ,tpl: new Ext.XTemplate(
-                '<tpl for="."><div class="x-combo-list-item">'
-                ,'{pagetitle} ({id}) - {context_key}'
-                ,'</div></tpl>')
             ,fieldLabel: _('bendera.link_internal')
             ,id: 'link_internal'
             ,name: 'link_internal'
@@ -277,6 +273,7 @@ Bendera.window.CreateItem = function(config) {
             ,width: 300
         },{
             xtype: 'label'
+            ,id: 'link_external_help'
             ,text: _('bendera.link_external-help')
             ,cls: 'desc-under'
         },{
@@ -349,11 +346,11 @@ Ext.reg('bendera-window-item-create', Bendera.window.CreateItem);
 
 Bendera.window.UpdateItem = function(config) {
     var templateList = new Ext.data.JsonStore({
-      url: Bendera.config.connector_url
-      ,baseParams:{
-        action: 'mgr/item/templatelist'
-      }
-      ,fields: ['value','text']
+        url: Bendera.config.connector_url
+        ,baseParams:{
+            action: 'mgr/item/templatelist'
+        }
+        ,fields: ['value','text']
     });
 
     config = config || {};
@@ -457,6 +454,7 @@ Bendera.window.UpdateItem = function(config) {
             ,baseParams: {
                 action: 'mgr/resource/getlist'
                 ,limit: 20
+                ,value: config.record.link_internal
                 ,sort: 'pagetitle'
                 ,dir: 'asc'
             }
@@ -469,6 +467,13 @@ Bendera.window.UpdateItem = function(config) {
             ,editable: true
             ,forceSelection: true
             ,width: 300
+            ,listeners: {
+                'select': {
+                    fn:function(data) {
+                       console.log(this.value);
+                    }
+                }
+    }
         }, {
             xtype: 'textfield'
             ,fieldLabel: _('bendera.link_external')
@@ -477,6 +482,7 @@ Bendera.window.UpdateItem = function(config) {
             ,width: 300
         },{
             xtype: 'label'
+            ,id: 'link_external_help'
             ,text: _('bendera.link_external-help')
             ,cls: 'desc-under'
         },{
@@ -514,7 +520,7 @@ Bendera.window.UpdateItem = function(config) {
                         if (imageUrl.indexOf('/') === 0){
                             imageUrl = imageUrl.replace('/','');
                         }
-                        
+
                         Ext.getCmp('currimg').setSrc(imageUrl);
                         Ext.getCmp('image').setValue(imageUrl);
                     }
@@ -550,14 +556,15 @@ Ext.extend(Bendera.window.UpdateItem, MODx.Window, {
 Ext.reg('bendera-window-item-update', Bendera.window.UpdateItem);
 
 Bendera.SetVisibleFields = function(value) {
-    var titleField        = Ext.getCmp('title'),
-        descriptionField  = Ext.getCmp('description'),
-        linkInternalField = Ext.getCmp('link_internal'),
-        linkExternalField = Ext.getCmp('link_external'),
-        htmlField         = Ext.getCmp('html'),
-        imageField        = Ext.getCmp('image'),
-        currimgField      = Ext.getCmp('currimg'),
-        newimgField       = Ext.getCmp('image_newimage');
+    var titleField            = Ext.getCmp('title'),
+        descriptionField      = Ext.getCmp('description'),
+        linkInternalField     = Ext.getCmp('link_internal'),
+        linkExternalField     = Ext.getCmp('link_external'),
+        linkExternalFieldHelp = Ext.getCmp('link_external_help'),
+        htmlField             = Ext.getCmp('html'),
+        imageField            = Ext.getCmp('image'),
+        currimgField          = Ext.getCmp('currimg'),
+        newimgField           = Ext.getCmp('image_newimage');
 
     switch (value) {
         case 'button':
@@ -569,6 +576,7 @@ Bendera.SetVisibleFields = function(value) {
             newimgField.hide();
             linkInternalField.show();
             linkExternalField.show();
+            linkExternalFieldHelp.show();
             break;
         case 'html':
             titleField.show();
@@ -579,6 +587,7 @@ Bendera.SetVisibleFields = function(value) {
             newimgField.hide();
             linkInternalField.hide();
             linkExternalField.hide();
+            linkExternalFieldHelp.hide();
             break;
         case 'image':
             titleField.show();
@@ -589,6 +598,7 @@ Bendera.SetVisibleFields = function(value) {
             newimgField.show();
             linkInternalField.hide();
             linkExternalField.hide();
+            linkExternalFieldHelp.hide();
             break;
         case 'affiliate':
             titleField.show();
@@ -599,6 +609,7 @@ Bendera.SetVisibleFields = function(value) {
             newimgField.hide();
             linkInternalField.hide();
             linkExternalField.hide();
+            linkExternalFieldHelp.hide();
             break;
     }
 };
