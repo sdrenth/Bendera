@@ -129,6 +129,7 @@ class Bendera
 
         /* Tpls. */
         $htmlTpl      = $this->modx->getOption('htmlTpl', $scriptProperties, 'benderaItemHTML');
+        $bannerTpl    = $this->modx->getOption('bannerTpl', $scriptProperties, 'benderaItemBanner');
         $buttonTpl    = $this->modx->getOption('buttonTpl', $scriptProperties, 'benderaItemButton');
         $imageTpl     = $this->modx->getOption('imageTpl', $scriptProperties, 'benderaItemImage');
         $affiliateTpl = $this->modx->getOption('affiliateTpl', $scriptProperties, 'benderaItemAffiliate');
